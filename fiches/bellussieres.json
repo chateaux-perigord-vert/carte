@@ -1,8 +1,8 @@
 {
   "_lisezmoi": "Votre fiche. Modifiez le texte entre guillemets, gardez les guillemets et les virgules. Laissez un champ vide (\"\") pour qu'il ne s'affiche pas. Le champ statut sert a signaler une fermeture : laissez-le vide si le lieu est ouvert.",
-  "nom": "Bellussieres",
-  "type": "Chateau",
-  "statut": "Site ferme au public, acces exterieur uniquement.",
+  "nom": "Bellussières",
+  "type": "Château",
+  "statut": "Site fermé au public, acces exterieur uniquement.",
   "presentation": "",
   "horaires": "",
   "tarifs": "",
