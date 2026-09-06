@@ -1,0 +1,16 @@
+{
+  "_lisezmoi": "Ce fichier liste les monuments et leur position sur la carte. Il est géré par les administrateurs uniquement. Les proprietaires modifient leur propre fichier (nontron.json, beauvais.json, etc.), pas celui-ci. x et y sont en pourcentage de la largeur et de la hauteur de l'image.",
+  "carte": "carte.png",
+  "monuments": [
+    { "id": "nontron", "x": 86.1, "y": 12.6 },
+    { "id": "beauvais", "x": 44.4, "y": 12.3 },
+    { "id": "connezac", "x": 28.4, "y": 23.2 },
+    { "id": "bellussieres", "x": 36.6, "y": 36.2 },
+    { "id": "aucors", "x": 12.9, "y": 39.0 },
+    { "id": "bernardieres", "x": 49.6, "y": 54.3 },
+    { "id": "lavergne", "x": 21.6, "y": 62.6 },
+    { "id": "beaurecueil", "x": 39.4, "y": 63.7 },
+    { "id": "mareuil", "x": 11.8, "y": 83.4 },
+    { "id": "larenaudie", "x": 89.4, "y": 85.1 }
+  ]
+}

@@ -1,0 +1,10 @@
+Deposer ici, et ne jamais supprimer :
+
+  fond-aquarelle.png   le fond avec routes et noms, sans les vignettes
+  carte.xcf            le fichier GIMP en couches ayant servi au montage
+  vignettes/           les dix silhouettes detourees, fond transparent
+  prompt-carte.txt     le prompt ayant genere le fond
+  prompt-vignettes.txt le prompt ayant genere les silhouettes
+
+Sans ces fichiers, la carte ne peut plus etre modifiee : il faudrait tout
+refaire. Avec eux, ajouter ou retirer un chateau prend une demi-heure.

@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chateaux du Perigord Vert — Nontron et Mareuil</title>
+<meta name="description" content="Dix chateaux et villages a decouvrir entre Nontron et Mareuil, en Dordogne.">
+
+<style>
+/* ------------------------------------------------------------------
+   Palette tiree de la carte elle-meme : encre brune, routes, toits,
+   verts de vegetation. Aucune police ni ressource exterieure : la page
+   doit fonctionner seule, hors ligne, et dans vingt ans.
+   ------------------------------------------------------------------ */
+:root{
+  --encre:#332C1E;
+  --encre-pale:#6B5F49;
+  --route:#8B6F47;
+  --toit:#A85B37;
+  --papier:#EDE4CE;
+  --papier-fonce:#DFD2B4;
+  --vegetation:#7A8757;
+  --serif:Georgia,"Iowan Old Style","Palatino Linotype",Palatino,"Times New Roman",serif;
+}
+
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--papier);
+  color:var(--encre);
+  font-family:var(--serif);
+  font-size:17px;
+  line-height:1.6;
+  -webkit-text-size-adjust:100%;
+}
+
+/* ---------- En-tete ---------- */
+/* La carte porte deja son titre dans le cartouche : le titre de la page
+   n'est destine qu'aux moteurs de recherche et aux lecteurs d'ecran. */
+.titre-invisible{
+  position:absolute;width:1px;height:1px;
+  padding:0;margin:-1px;overflow:hidden;
+  clip:rect(0 0 0 0);white-space:nowrap;border:0;
+}
+
+/* ---------- Carte ---------- */
+.cadre{
+  max-width:75rem;
+  margin:1.5rem auto 0;
+  padding:0 1.25rem;
+}
+.carte{
+  position:relative;
+  overflow:auto;
+  -webkit-overflow-scrolling:touch;
+  border:1px solid var(--papier-fonce);
+  background:var(--papier-fonce);
+}
+.carte-inner{position:relative;min-width:44rem}
+.carte img{display:block;width:100%;height:auto}
+
+/* Zones cliquables : invisibles pour ne pas salir l'aquarelle,
+   revelees au survol, au focus clavier et une fois au chargement. */
+.point{
+  position:absolute;
+  transform:translate(-50%,-50%);
+  width:4.2rem;height:4.2rem;
+  min-width:48px;min-height:48px;
+  padding:0;margin:0;
+  border:2px solid transparent;
+  border-radius:50%;
+  background:transparent;
+  cursor:pointer;
+  transition:border-color .18s,background-color .18s;
+}
+.point:hover,.point:focus-visible{
+  border-color:var(--toit);
+  background:rgba(168,91,55,.10);
+  outline:none;
+}
+.point:focus-visible{border-width:3px}
+.point[aria-expanded="true"]{
+  border-color:var(--toit);
+  background:rgba(168,91,55,.16);
+}
+@keyframes reveler{
+  0%,100%{border-color:transparent}
+  35%,65%{border-color:rgba(168,91,55,.55)}
+}
+.reveler .point{animation:reveler 2.2s ease-in-out .6s 1}
+@media (prefers-reduced-motion:reduce){
+  .reveler .point{animation:none}
+  *{transition:none!important}
+}
+
+.aide{
+  max-width:75rem;
+  margin:.5rem auto 0;
+  padding:0 1.25rem;
+  font-size:.85rem;
+  color:var(--encre-pale);
+  font-style:italic;
+}
+
+/* ---------- Liste des lieux ---------- */
+.liste{
+  max-width:75rem;
+  margin:2.5rem auto 4rem;
+  padding:0 1.25rem;
+}
+.liste h2{
+  font-size:1rem;
+  font-weight:400;
+  color:var(--encre-pale);
+  border-bottom:1px solid var(--papier-fonce);
+  padding-bottom:.4rem;
+  margin:0 0 .25rem;
+}
+.liste ul{list-style:none;margin:0;padding:0}
+.liste li{border-bottom:1px solid var(--papier-fonce)}
+.liste button{
+  width:100%;
+  display:flex;
+  align-items:baseline;
+  gap:.75rem;
+  padding:.85rem .25rem;
+  background:none;border:none;
+  font:inherit;color:inherit;
+  text-align:left;
+  cursor:pointer;
+}
+.liste button:hover .lieu-nom,
+.liste button:focus-visible .lieu-nom{color:var(--toit)}
+.liste button:focus-visible{outline:2px solid var(--toit);outline-offset:-2px}
+.lieu-nom{font-size:1.15rem}
+.lieu-type{font-size:.8rem;color:var(--encre-pale);font-style:italic}
+
+/* ---------- Fiche ---------- */
+.voile{
+  position:fixed;inset:0;
+  background:rgba(51,44,30,.45);
+  opacity:0;pointer-events:none;
+  transition:opacity .25s;
+  z-index:10;
+}
+.voile.ouvert{opacity:1;pointer-events:auto}
+
+.fiche{
+  position:fixed;
+  left:0;right:0;bottom:0;
+  max-height:88vh;
+  overflow-y:auto;
+  background:var(--papier);
+  border-top:3px solid var(--route);
+  transform:translateY(101%);
+  transition:transform .28s ease-out;
+  z-index:11;
+  padding:1.5rem 1.5rem 3rem;
+}
+.fiche.ouvert{transform:translateY(0)}
+@media (min-width:48rem){
+  .fiche{
+    left:auto;top:0;bottom:0;
+    width:26rem;max-height:none;
+    border-top:none;
+    border-left:3px solid var(--route);
+    transform:translateX(101%);
+    padding:2.5rem 2rem;
+  }
+  .fiche.ouvert{transform:translateX(0)}
+}
+
+.fiche h2{
+  font-size:1.9rem;font-weight:400;
+  margin:0 0 .1rem;line-height:1.15;
+}
+.fiche .type{
+  color:var(--encre-pale);font-style:italic;
+  font-size:.9rem;margin:0 0 1.4rem;
+}
+.fiche p{margin:0 0 1rem;max-width:34rem}
+
+.statut{
+  margin:0 0 1.3rem;
+  padding:.8rem 1rem;
+  background:var(--papier-fonce);
+  border-left:3px solid var(--route);
+  font-size:.95rem;
+  max-width:34rem;
+}
+.lieu-statut{
+  font-size:.78rem;color:var(--route);
+  font-style:italic;margin-left:auto;padding-left:.5rem;
+}
+
+.fiche dl{margin:1.5rem 0 0;padding-top:1.2rem;border-top:1px solid var(--papier-fonce)}
+.fiche dt{
+  font-size:.8rem;color:var(--encre-pale);
+  font-style:italic;margin-top:1rem;
+}
+.fiche dt:first-child{margin-top:0}
+.fiche dd{margin:.15rem 0 0}
+.fiche a{color:var(--toit);text-decoration:underline;text-underline-offset:2px}
+.fiche a:focus-visible{outline:2px solid var(--toit);outline-offset:2px}
+
+.maj{margin-top:2rem;font-size:.78rem;color:var(--encre-pale);font-style:italic}
+
+.fermer{
+  position:absolute;top:.75rem;right:.9rem;
+  width:2.6rem;height:2.6rem;
+  border:1px solid var(--papier-fonce);
+  border-radius:50%;
+  background:var(--papier);
+  color:var(--encre);
+  font:1.4rem/1 var(--serif);
+  cursor:pointer;
+}
+.fermer:hover{border-color:var(--toit);color:var(--toit)}
+.fermer:focus-visible{outline:2px solid var(--toit);outline-offset:2px}
+
+/* ---------- Calibrage (page?calibrer) ---------- */
+.calibrage{
+  position:fixed;left:0;right:0;bottom:0;
+  background:var(--encre);color:var(--papier);
+  padding:1rem 1.25rem;font-size:.85rem;
+  font-family:ui-monospace,Menlo,Consolas,monospace;
+  z-index:20;max-height:45vh;overflow:auto;
+}
+.calibrage b{color:#E8B77A}
+.calibrage textarea{
+  width:100%;height:9rem;margin-top:.6rem;
+  background:#221E14;color:var(--papier);
+  border:1px solid var(--route);padding:.6rem;
+  font:inherit;
+}
+</style>
+</head>
+<body>
+
+<h1 class="titre-invisible">Sur la route de Mareuil a Nontron — dix chateaux du Perigord Vert</h1>
+
+<div class="cadre">
+  <div class="carte">
+    <div class="carte-inner" id="carte-inner">
+      <img id="image-carte" alt="Carte illustree de la region de Nontron et Mareuil, situant dix chateaux et villages.">
+    </div>
+  </div>
+</div>
+<p class="aide">Touchez un chateau sur la carte, ou choisissez-le dans la liste.</p>
+
+<nav class="liste">
+  <h2>Les lieux</h2>
+  <ul id="liste-lieux"></ul>
+</nav>
+
+<div class="voile" id="voile"></div>
+
+<aside class="fiche" id="fiche" role="dialog" aria-modal="true" aria-labelledby="fiche-titre" hidden>
+  <button class="fermer" id="fermer" aria-label="Fermer la fiche">&times;</button>
+  <div id="fiche-contenu"></div>
+</aside>
+
+<script>
+/* =====================================================================
+   Carte des chateaux — Perigord Vert
+   Aucune dependance exterieure. Les donnees vivent dans /fiches.
+   ===================================================================== */
+
+var DOSSIER = 'fiches/';
+var fiches = {};        // id -> contenu de la fiche
+var index = null;       // contenu de fiches/index.json
+var ouvertePour = null; // id du monument affiche
+
+/* ---------- Chargement ---------- */
+function charger(){
+  fetch(DOSSIER + 'index.json')
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      index = data;
+      document.getElementById('image-carte').src = data.carte;
+      return Promise.all(data.monuments.map(function(m){
+        return fetch(DOSSIER + m.id + '.json')
+          .then(function(r){ return r.json(); })
+          .then(function(f){ fiches[m.id] = f; })
+          .catch(function(){ fiches[m.id] = { nom: m.id, type: '', presentation: 'Fiche indisponible.' }; });
+      }));
+    })
+    .then(construire)
+    .catch(function(){
+      document.querySelector('.aide').textContent =
+        'Les donnees de la carte n\'ont pas pu etre chargees. Rechargez la page dans un instant.';
+    });
+}
+
+/* ---------- Construction de la page ---------- */
+function construire(){
+  var inner = document.getElementById('carte-inner');
+  var liste = document.getElementById('liste-lieux');
+
+  index.monuments.forEach(function(m){
+    var f = fiches[m.id];
+
+    var point = document.createElement('button');
+    point.className = 'point';
+    point.style.left = m.x + '%';
+    point.style.top  = m.y + '%';
+    point.setAttribute('aria-label', f.nom);
+    point.setAttribute('aria-expanded', 'false');
+    point.dataset.id = m.id;
+    point.addEventListener('click', function(){ ouvrir(m.id); });
+    inner.appendChild(point);
+
+    var li = document.createElement('li');
+    var b = document.createElement('button');
+    b.innerHTML = '<span class="lieu-nom"></span><span class="lieu-type"></span>'
+                + '<span class="lieu-statut"></span>';
+    b.querySelector('.lieu-nom').textContent = f.nom;
+    b.querySelector('.lieu-type').textContent = f.type || '';
+    b.querySelector('.lieu-statut').textContent = f.statut ? 'Fermeture signalee' : '';
+    b.addEventListener('click', function(){ ouvrir(m.id); });
+    li.appendChild(b);
+    liste.appendChild(li);
+  });
+
+  document.querySelector('.carte').classList.add('reveler');
+  if (location.search.indexOf('calibrer') > -1) demarrerCalibrage();
+}
+
+/* ---------- Fiche ---------- */
+function ligne(intitule, valeur, lien){
+  if (!valeur) return '';
+  var contenu = lien
+    ? '<a href="' + lien + '">' + echapper(valeur) + '</a>'
+    : echapper(valeur);
+  return '<dt>' + intitule + '</dt><dd>' + contenu + '</dd>';
+}
+
+function echapper(t){
+  return String(t).replace(/[&<>"]/g, function(c){
+    return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c];
+  });
+}
+
+function ouvrir(id){
+  var f = fiches[id];
+  if (!f) return;
+
+  var html = '<h2 id="fiche-titre">' + echapper(f.nom) + '</h2>';
+  if (f.type) html += '<p class="type">' + echapper(f.type) + '</p>';
+  if (f.statut) html += '<p class="statut">' + echapper(f.statut) + '</p>';
+  if (f.presentation) html += '<p>' + echapper(f.presentation) + '</p>';
+
+  var d = ligne('Horaires', f.horaires)
+        + ligne('Tarifs', f.tarifs)
+        + ligne('Acces', f.acces)
+        + ligne('Telephone', f.telephone, f.telephone ? 'tel:' + String(f.telephone).replace(/\s/g,'') : null)
+        + ligne('Courriel', f.email, f.email ? 'mailto:' + f.email : null)
+        + ligne('Site', f.site, f.site);
+  if (d) html += '<dl>' + d + '</dl>';
+
+  if (f.maj) html += '<p class="maj">Fiche mise a jour le ' + echapper(f.maj) + '</p>';
+
+  document.getElementById('fiche-contenu').innerHTML = html;
+
+  var fiche = document.getElementById('fiche');
+  fiche.hidden = false;
+  requestAnimationFrame(function(){ fiche.classList.add('ouvert'); });
+  document.getElementById('voile').classList.add('ouvert');
+  document.getElementById('fermer').focus();
+
+  marquer(id);
+  ouvertePour = id;
+}
+
+function fermer(){
+  var fiche = document.getElementById('fiche');
+  fiche.classList.remove('ouvert');
+  document.getElementById('voile').classList.remove('ouvert');
+  setTimeout(function(){ fiche.hidden = true; }, 300);
+
+  var actif = ouvertePour;
+  marquer(null);
+  ouvertePour = null;
+  if (actif){
+    var b = document.querySelector('.point[data-id="' + actif + '"]');
+    if (b) b.focus();
+  }
+}
+
+function marquer(id){
+  document.querySelectorAll('.point').forEach(function(p){
+    p.setAttribute('aria-expanded', p.dataset.id === id ? 'true' : 'false');
+  });
+}
+
+document.getElementById('fermer').addEventListener('click', fermer);
+document.getElementById('voile').addEventListener('click', fermer);
+document.addEventListener('keydown', function(e){
+  if (e.key === 'Escape' && ouvertePour) fermer();
+});
+
+/* ---------- Mode calibrage ---------- =================================
+   Ouvrir la page avec ?calibrer a la fin de l'adresse.
+   Cliquez sur chaque monument dans l'ordre indique : les coordonnees
+   exactes sont calculees et affichees, pretes a coller dans index.json.
+   ===================================================================== */
+function demarrerCalibrage(){
+  var restants = index.monuments.map(function(m){ return m.id; });
+  var releves = [];
+
+  var barre = document.createElement('div');
+  barre.className = 'calibrage';
+  document.body.appendChild(barre);
+
+  function afficher(){
+    if (restants.length){
+      barre.innerHTML = 'Calibrage — cliquez sur <b>' + restants[0] + '</b> ('
+        + (releves.length + 1) + ' sur ' + index.monuments.length + ')';
+    } else {
+      var json = releves.map(function(r){
+        return '    { "id": "' + r.id + '", "x": ' + r.x.toFixed(1) + ', "y": ' + r.y.toFixed(1) + ' }';
+      }).join(',\n');
+      barre.innerHTML = 'Termine. Remplacez la liste "monuments" de <b>fiches/index.json</b> par ceci :'
+        + '<textarea readonly>  "monuments": [\n' + json + '\n  ]</textarea>';
+      barre.querySelector('textarea').select();
+    }
+  }
+
+  document.getElementById('carte-inner').addEventListener('click', function(e){
+    if (!restants.length) return;
+    var r = this.getBoundingClientRect();
+    releves.push({
+      id: restants.shift(),
+      x: (e.clientX - r.left) / r.width * 100,
+      y: (e.clientY - r.top) / r.height * 100
+    });
+    afficher();
+  }, true);
+
+  document.querySelectorAll('.point').forEach(function(p){ p.style.pointerEvents = 'none'; });
+  afficher();
+}
+
+charger();
+</script>
+</body>
+</html>
