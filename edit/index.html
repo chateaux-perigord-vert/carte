@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Modifier ma fiche</title>
+
+<style>
+/* Ecran concu pour tablette et ordinateur, lecteurs ages :
+   corps de texte large, une colonne, cibles genereuses,
+   des mots plutot que des icones. */
+:root{
+  --encre:#332C1E;
+  --encre-pale:#6B5F49;
+  --route:#8B6F47;
+  --toit:#A85B37;
+  --papier:#F5EFE0;
+  --papier-fonce:#DFD2B4;
+  --vert:#5C7A4A;
+  --serif:Georgia,"Iowan Old Style","Palatino Linotype",Palatino,serif;
+}
+*{box-sizing:border-box}
+html{font-size:20px}
+body{
+  margin:0;padding:0;
+  background:var(--papier);
+  color:var(--encre);
+  font-family:var(--serif);
+  line-height:1.6;
+}
+
+.bandeau{
+  background:var(--encre);
+  color:var(--papier);
+  padding:1.2rem 2rem;
+}
+.bandeau h1{margin:0;font-size:1.5rem;font-weight:400}
+.bandeau p{margin:.2rem 0 0;font-size:.85rem;opacity:.8}
+
+main{max-width:46rem;margin:0 auto;padding:2rem 1.5rem 14rem}
+
+.intro{
+  background:#fff;
+  border-left:5px solid var(--route);
+  padding:1.2rem 1.5rem;
+  margin-bottom:2.5rem;
+  font-size:.95rem;
+}
+.intro p{margin:0 0 .6rem}
+.intro p:last-child{margin:0}
+
+section{margin-bottom:3rem}
+h2{
+  font-size:1.35rem;font-weight:400;
+  border-bottom:2px solid var(--papier-fonce);
+  padding-bottom:.5rem;margin:0 0 1.5rem;
+}
+
+label{display:block;margin-bottom:2rem}
+.intitule{
+  display:block;
+  font-size:1.05rem;
+  margin-bottom:.1rem;
+}
+.explication{
+  display:block;
+  font-size:.85rem;
+  color:var(--encre-pale);
+  font-style:italic;
+  margin-bottom:.5rem;
+}
+input[type=text],input[type=date],input[type=tel],
+input[type=email],input[type=url],textarea{
+  width:100%;
+  font-family:var(--serif);
+  font-size:1.05rem;
+  padding:.85rem 1rem;
+  border:2px solid var(--papier-fonce);
+  background:#fff;
+  color:var(--encre);
+  border-radius:4px;
+}
+input:focus,textarea:focus{
+  outline:none;
+  border-color:var(--toit);
+  box-shadow:0 0 0 4px rgba(168,91,55,.15);
+}
+textarea{min-height:7rem;resize:vertical;line-height:1.6}
+
+/* Evenements */
+.evenement{
+  background:#fff;
+  border:2px solid var(--papier-fonce);
+  border-radius:6px;
+  padding:1.5rem 1.5rem .5rem;
+  margin-bottom:1.5rem;
+  position:relative;
+}
+.evenement .dates{display:flex;gap:1.5rem;flex-wrap:wrap}
+.evenement .dates label{flex:1;min-width:12rem}
+.passe{opacity:.55}
+.etiquette-passe{
+  display:inline-block;
+  background:var(--papier-fonce);
+  color:var(--encre-pale);
+  font-size:.75rem;font-style:italic;
+  padding:.2rem .7rem;border-radius:12px;
+  margin-bottom:1rem;
+}
+
+button{
+  font-family:var(--serif);
+  font-size:1rem;
+  cursor:pointer;
+  border-radius:5px;
+  padding:.8rem 1.4rem;
+  border:2px solid var(--route);
+  background:#fff;
+  color:var(--route);
+}
+button:hover{background:var(--route);color:#fff}
+button:focus-visible{outline:3px solid var(--toit);outline-offset:2px}
+
+.supprimer{
+  border-color:var(--papier-fonce);
+  color:var(--encre-pale);
+  font-size:.9rem;
+  padding:.6rem 1.1rem;
+  margin-bottom:1.2rem;
+}
+.supprimer:hover{background:#B4453A;border-color:#B4453A;color:#fff}
+
+.ajouter{
+  width:100%;
+  padding:1.1rem;
+  font-size:1.05rem;
+  border-style:dashed;
+}
+
+/* Barre d'enregistrement, toujours visible */
+.barre{
+  position:fixed;left:0;right:0;bottom:0;
+  background:var(--papier);
+  border-top:2px solid var(--papier-fonce);
+  padding:1.2rem 1.5rem;
+  box-shadow:0 -4px 20px rgba(51,44,30,.12);
+}
+.barre-inner{
+  max-width:46rem;margin:0 auto;
+  display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;
+}
+.enregistrer{
+  background:var(--vert);
+  border-color:var(--vert);
+  color:#fff;
+  font-size:1.2rem;
+  padding:1rem 2.5rem;
+}
+.enregistrer:hover{background:#4A6639;border-color:#4A6639}
+.enregistrer:disabled{opacity:.5;cursor:default}
+.message{font-size:1rem}
+.message.succes{color:var(--vert)}
+.message.erreur{color:#B4453A}
+
+.chargement,.refus{
+  max-width:34rem;margin:6rem auto;padding:2rem;
+  text-align:center;font-size:1.1rem;color:var(--encre-pale);
+}
+.refus strong{display:block;color:var(--encre);font-size:1.3rem;margin-bottom:.8rem}
+</style>
+</head>
+<body>
+
+<div class="bandeau">
+  <h1 id="titre">Modifier ma fiche</h1>
+  <p id="sous-titre">Châteaux en Périgord Vert</p>
+</div>
+
+<div class="chargement" id="chargement">Chargement de votre fiche…</div>
+
+<div class="refus" id="refus" hidden>
+  <strong>Lien non reconnu</strong>
+  Vérifiez que vous avez ouvert le lien complet qui vous a été communiqué.
+  Si le problème persiste, contactez contact@chateauxenperigordvert.fr
+</div>
+
+<main id="formulaire" hidden>
+
+  <div class="intro">
+    <p>Modifiez ce que vous souhaitez, puis cliquez sur <strong>Enregistrer</strong> en bas de l'écran.</p>
+    <p>Vos modifications apparaissent sur la carte au bout d'une à deux minutes.</p>
+  </div>
+
+  <section>
+    <h2>Votre lieu</h2>
+
+    <label>
+      <span class="intitule">Présentation</span>
+      <span class="explication">Quelques phrases sur l'édifice, son époque, ce qu'on y voit.</span>
+      <textarea id="presentation"></textarea>
+    </label>
+
+    <label>
+      <span class="intitule">Conditions de visite</span>
+      <span class="explication">Par exemple : Visites sur rendez-vous. Ou : Ouvert de juin à septembre. Laissez vide si le lieu se visite librement.</span>
+      <input type="text" id="statut">
+    </label>
+
+    <label>
+      <span class="intitule">Horaires habituels</span>
+      <span class="explication">Facultatif. Évitez les horaires qui changent souvent.</span>
+      <input type="text" id="horaires">
+    </label>
+
+    <label>
+      <span class="intitule">Tarifs</span>
+      <span class="explication">Facultatif.</span>
+      <input type="text" id="tarifs">
+    </label>
+
+    <label>
+      <span class="intitule">Accès</span>
+      <span class="explication">Facultatif. Stationnement, accessibilité, indications pour trouver l'entrée.</span>
+      <input type="text" id="acces">
+    </label>
+  </section>
+
+  <section>
+    <h2>Vous contacter</h2>
+
+    <label>
+      <span class="intitule">Téléphone</span>
+      <input type="tel" id="telephone">
+    </label>
+
+    <label>
+      <span class="intitule">Adresse électronique</span>
+      <input type="email" id="email">
+    </label>
+
+    <label>
+      <span class="intitule">Site internet</span>
+      <span class="explication">L'adresse complète, en commençant par https://</span>
+      <input type="url" id="site">
+    </label>
+  </section>
+
+  <section>
+    <h2>Vos événements</h2>
+    <div class="intro" style="border-left-color:var(--toit)">
+      <p>Les événements disparaissent tout seuls de la carte une fois la date passée. Vous n'avez rien à supprimer.</p>
+    </div>
+    <div id="evenements"></div>
+    <button type="button" class="ajouter" id="ajouter">Ajouter un événement</button>
+  </section>
+
+</main>
+
+<div class="barre" id="barre" hidden>
+  <div class="barre-inner">
+    <button type="button" class="enregistrer" id="enregistrer">Enregistrer</button>
+    <span class="message" id="message"></span>
+  </div>
+</div>
+
+<script>
+/* =====================================================================
+   Page d'edition d'une fiche. L'acces se fait par un lien secret :
+   .../edit/?c=beauvais-xxxxxxxx
+   Le lien tient lieu de mot de passe. Aucun compte a creer.
+   ===================================================================== */
+
+var SERVICE = 'https://edition.chateauxenperigordvert.workers.dev';
+var cle = new URLSearchParams(location.search).get('c');
+var fiche = null;
+
+function $(id){ return document.getElementById(id); }
+
+/* ---------- Chargement ---------- */
+if (!cle){
+  $('chargement').hidden = true;
+  $('refus').hidden = false;
+} else {
+  fetch(SERVICE + '/fiche?c=' + encodeURIComponent(cle))
+    .then(function(r){
+      if (!r.ok) throw new Error('refus');
+      return r.json();
+    })
+    .then(function(data){
+      fiche = data;
+      remplir();
+      $('chargement').hidden = true;
+      $('formulaire').hidden = false;
+      $('barre').hidden = false;
+    })
+    .catch(function(){
+      $('chargement').hidden = true;
+      $('refus').hidden = false;
+    });
+}
+
+/* ---------- Affichage ---------- */
+var champs = ['presentation','statut','horaires','tarifs','acces',
+              'telephone','email','site'];
+
+function remplir(){
+  $('titre').textContent = fiche.nom;
+  document.title = fiche.nom + ' — modifier ma fiche';
+  champs.forEach(function(c){ $(c).value = fiche[c] || ''; });
+  (fiche.evenements || []).forEach(ajouterEvenement);
+}
+
+function aujourdhui(){
+  return new Date().toISOString().slice(0,10);
+}
+
+function ajouterEvenement(ev){
+  ev = ev || { titre:'', debut:'', fin:'', detail:'' };
+  var bloc = document.createElement('div');
+  bloc.className = 'evenement';
+
+  var passe = (ev.fin || ev.debut) && (ev.fin || ev.debut) < aujourdhui();
+  if (passe) bloc.classList.add('passe');
+
+  bloc.innerHTML =
+    (passe ? '<span class="etiquette-passe">Date passée, plus affiché sur la carte</span>' : '') +
+    '<label><span class="intitule">Nom de l\'événement</span>' +
+    '<input type="text" class="ev-titre"></label>' +
+    '<div class="dates">' +
+      '<label><span class="intitule">Date</span>' +
+      '<input type="date" class="ev-debut"></label>' +
+      '<label><span class="intitule">Jusqu\'au</span>' +
+      '<span class="explication">Uniquement si l\'événement dure plusieurs jours.</span>' +
+      '<input type="date" class="ev-fin"></label>' +
+    '</div>' +
+    '<label><span class="intitule">Précisions</span>' +
+    '<span class="explication">Horaire, lieu, tarif, réservation.</span>' +
+    '<input type="text" class="ev-detail"></label>' +
+    '<button type="button" class="supprimer">Supprimer cet événement</button>';
+
+  bloc.querySelector('.ev-titre').value  = ev.titre  || '';
+  bloc.querySelector('.ev-debut').value  = ev.debut  || '';
+  bloc.querySelector('.ev-fin').value    = ev.fin    || '';
+  bloc.querySelector('.ev-detail').value = ev.detail || '';
+
+  bloc.querySelector('.supprimer').addEventListener('click', function(){
+    bloc.remove();
+    signaler('', '');
+  });
+
+  $('evenements').appendChild(bloc);
+}
+
+$('ajouter').addEventListener('click', function(){
+  ajouterEvenement();
+  var blocs = document.querySelectorAll('.evenement');
+  blocs[blocs.length - 1].querySelector('.ev-titre').focus();
+});
+
+/* ---------- Enregistrement ---------- */
+function signaler(texte, genre){
+  var m = $('message');
+  m.textContent = texte;
+  m.className = 'message' + (genre ? ' ' + genre : '');
+}
+
+$('enregistrer').addEventListener('click', function(){
+  var bouton = this;
+
+  champs.forEach(function(c){ fiche[c] = $(c).value.trim(); });
+
+  fiche.evenements = [].map.call(
+    document.querySelectorAll('.evenement'),
+    function(b){
+      return {
+        titre:  b.querySelector('.ev-titre').value.trim(),
+        debut:  b.querySelector('.ev-debut').value,
+        fin:    b.querySelector('.ev-fin').value,
+        detail: b.querySelector('.ev-detail').value.trim()
+      };
+    }
+  ).filter(function(ev){ return ev.titre || ev.debut; });
+
+  fiche.maj = aujourdhui();
+
+  bouton.disabled = true;
+  signaler('Enregistrement en cours…', '');
+
+  fetch(SERVICE + '/enregistrer?c=' + encodeURIComponent(cle), {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(fiche)
+  })
+  .then(function(r){
+    if (!r.ok) throw new Error('echec');
+    signaler('Enregistré. Votre fiche sera à jour sur la carte dans une à deux minutes.', 'succes');
+  })
+  .catch(function(){
+    signaler('L\'enregistrement a échoué. Réessayez dans un instant.', 'erreur');
+  })
+  .then(function(){ bouton.disabled = false; });
+});
+</script>
+</body>
+</html>

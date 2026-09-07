@@ -3,48 +3,21 @@
 Site de la carte touristique reliant dix chateaux et villages entre Nontron
 et Mareuil. Chaque lieu a sa fiche, tenue a jour par son proprietaire.
 
-## Pour les proprietaires : modifier votre fiche
+## Pour les proprietaires : modifier sa fiche
 
-1. Ouvrez le dossier `fiches/` sur GitHub.
-2. Cliquez sur le fichier portant le nom de votre lieu, par exemple `beauvais.json`.
-3. Cliquez sur l'icone crayon, en haut a droite.
-4. Modifiez le texte **entre les guillemets**. Ne touchez ni aux guillemets,
-   ni aux virgules, ni aux accolades.
-5. Mettez la date du jour dans le champ `maj`.
-6. Descendez en bas de page, cliquez sur **Commit changes**.
+Chaque proprietaire recoit un lien personnel et secret, de la forme :
 
-La modification est en ligne au bout d'une a deux minutes. Rechargez la carte
-pour la voir.
+    https://chateauxenperigordvert.fr/edit/?c=beauvais-g1bp20fu
 
-Un champ laisse vide (`""`) ne s'affiche pas sur la fiche. C'est utile si vous
-n'avez pas de site internet, par exemple.
+Ce lien ouvre directement sa fiche dans un formulaire. Il n'y a ni compte a
+creer, ni mot de passe : le lien tient lieu de cle. Il ne donne acces qu'a
+une seule fiche.
 
-### Le statut, et pourquoi votre fiche annonce une fermeture
+Le document `FICHE-PROPRIETAIRE.md` est concu pour etre imprime et remis a
+chacun avec son lien.
 
-Au depart, toutes les fiches portent la mention « Site ferme au public, acces
-exterieur uniquement ». C'est volontaire : tant que personne n'a confirme les
-conditions de visite, mieux vaut qu'un visiteur soit agreablement surpris de
-pouvoir entrer que de faire vingt kilometres pour trouver un portail ferme.
-
-Des que vous renseignez votre fiche, videz le champ `statut` (`""`) et la
-mention disparait.
-
-Le champ sert ensuite a signaler toute fermeture, definitive ou saisonniere.
-Laissez-le vide si le lieu est ouvert. Rempli,
-son texte apparait en tete de fiche, et la liste des lieux porte la mention
-« Fermeture signalee ». Par exemple :
-
-    "statut": "Site ferme au public, acces exterieur uniquement."
-
-Le lieu reste sur la carte : il est visible depuis la route, le faire
-disparaitre creerait de la confusion. La fiche explique, c'est suffisant.
-
-En cas d'erreur, rien n'est perdu : l'onglet **History** du fichier permet de
-revenir a n'importe quelle version precedente.
-
-Vous ne pouvez modifier que votre propre fichier. Les autres fiches et la carte
-elle-meme sont hors de votre portee : aucune fausse manoeuvre de votre part ne
-peut les abimer.
+Les liens sont conserves dans `liens-secrets.json`, **qui ne doit jamais
+etre depose dans le depot public**. Gardez-le avec les mots de passe.
 
 ## Pour les administrateurs
 
@@ -76,6 +49,33 @@ fermeture. Rien a retoucher dans l'image.
 4. Ajouter la ligne correspondante dans `index.json`, puis relancer le mode
    calibrage pour poser le point cliquable.
 5. Donner les droits d'edition au proprietaire concerne.
+
+### Le service d'edition
+
+`service/edition.js` est la seule piece qui ne soit pas un fichier statique.
+Il recoit les saisies des proprietaires et reecrit les fiches dans le depot.
+Il se deploie sur Cloudflare Workers, offre gratuite, sans base de donnees.
+
+Trois variables sont a definir dans Cloudflare :
+
+    GITHUB_TOKEN   secret — jeton GitHub "fine-grained" limite au seul depot
+                   carte, permission Contents : Read and write
+    LIENS          secret — le contenu de liens-secrets.json
+    DEPOT          variable — chateaux-perigord-vert/carte
+
+L'adresse du service deploye doit ensuite etre reportee dans `edit/index.html`,
+variable `SERVICE` en haut du script.
+
+Le service ne peut modifier que les champs de contenu d'une fiche. Le nom, le
+type et la position du monument lui sont inaccessibles : une saisie erronee ne
+peut donc pas deplacer un chateau sur la carte ni le faire disparaitre.
+
+### Ajouter ou retirer un proprietaire
+
+Les liens secrets sont dans `liens-secrets.json`. Pour revoquer un acces,
+supprimer la ligne correspondante et mettre a jour la variable LIENS dans
+Cloudflare. Pour en creer un, ajouter une ligne associant un nouveau lien
+secret a l'identifiant de la fiche.
 
 ### Le dossier sources
 

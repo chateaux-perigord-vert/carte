@@ -203,6 +203,29 @@ body{
 .fiche a{color:var(--toit);text-decoration:underline;text-underline-offset:2px}
 .fiche a:focus-visible{outline:2px solid var(--toit);outline-offset:2px}
 
+.agenda{
+  margin:1.8rem 0 0;
+  padding-top:1.2rem;
+  border-top:1px solid var(--papier-fonce);
+}
+.agenda h3{
+  font-size:.8rem;color:var(--encre-pale);
+  font-style:italic;margin:0 0 .8rem;
+}
+.evenement{
+  border-left:3px solid var(--toit);
+  padding:.15rem 0 .15rem .9rem;
+  margin-bottom:1rem;
+}
+.evenement .quand{
+  display:block;font-size:.8rem;
+  color:var(--toit);
+}
+.evenement .quoi{display:block;font-size:1.02rem}
+.evenement .precision{
+  display:block;font-size:.88rem;color:var(--encre-pale);
+}
+
 .maj{margin-top:2rem;font-size:.78rem;color:var(--encre-pale);font-style:italic}
 
 .fermer{
@@ -341,6 +364,44 @@ function echapper(t){
   });
 }
 
+/* Les evenements dont la date est passee disparaissent d'eux-memes :
+   personne n'a a faire le menage. */
+function agenda(liste){
+  if (!Array.isArray(liste) || !liste.length) return '';
+
+  var jour = new Date().toISOString().slice(0, 10);
+  var venir = liste
+    .filter(function(ev){ return ev.titre && (ev.fin || ev.debut) >= jour; })
+    .sort(function(a, b){ return (a.debut || '').localeCompare(b.debut || ''); });
+
+  if (!venir.length) return '';
+
+  var html = '<div class="agenda"><h3>A venir</h3>';
+  venir.forEach(function(ev){
+    html += '<div class="evenement">'
+          + '<span class="quand">' + echapper(periode(ev)) + '</span>'
+          + '<span class="quoi">' + echapper(ev.titre) + '</span>'
+          + (ev.detail ? '<span class="precision">' + echapper(ev.detail) + '</span>' : '')
+          + '</div>';
+  });
+  return html + '</div>';
+}
+
+function joli(iso){
+  if (!iso) return '';
+  var m = ['janvier','fevrier','mars','avril','mai','juin','juillet',
+           'aout','septembre','octobre','novembre','decembre'];
+  var p = iso.split('-');
+  return parseInt(p[2], 10) + ' ' + m[parseInt(p[1], 10) - 1] + ' ' + p[0];
+}
+
+function periode(ev){
+  if (ev.debut && ev.fin && ev.fin !== ev.debut){
+    return 'Du ' + joli(ev.debut) + ' au ' + joli(ev.fin);
+  }
+  return joli(ev.debut || ev.fin);
+}
+
 function ouvrir(id){
   var f = fiches[id];
   if (!f) return;
@@ -357,6 +418,8 @@ function ouvrir(id){
         + ligne('Courriel', f.email, f.email ? 'mailto:' + f.email : null)
         + ligne('Site', f.site, f.site);
   if (d) html += '<dl>' + d + '</dl>';
+
+  html += agenda(f.evenements);
 
   if (f.maj) html += '<p class="maj">Fiche mise a jour le ' + echapper(f.maj) + '</p>';
 

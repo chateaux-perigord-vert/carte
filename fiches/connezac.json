@@ -1,8 +1,8 @@
 {
-  "_lisezmoi": "Votre fiche. Modifiez le texte entre guillemets, gardez les guillemets et les virgules. Laissez un champ vide (\"\") pour qu'il ne s'affiche pas. Le champ statut sert a signaler une fermeture : laissez-le vide si le lieu est ouvert.",
+  "_lisezmoi": "Fiche modifiee par le proprietaire via sa page personnelle. Ne pas editer ici a la main.",
   "nom": "Connezac",
-  "type": "Château",
-  "statut": "Site fermé au public, accès exterieur uniquement.",
+  "type": "Chateau",
+  "statut": "Site ferme au public, acces exterieur uniquement.",
   "presentation": "",
   "horaires": "",
   "tarifs": "",
@@ -10,5 +10,6 @@
   "telephone": "",
   "email": "",
   "site": "",
-  "maj": "2026-09-05"
+  "maj": "2026-09-05",
+  "evenements": []
 }
