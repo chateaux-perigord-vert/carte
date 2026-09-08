@@ -2,7 +2,7 @@
   "_lisezmoi": "Fiche modifiee par le proprietaire via sa page personnelle. Ne pas editer ici a la main.",
   "nom": "Nontron",
   "type": "Ville et chateau",
-  "statut": "Site ferme au public, acces exterieur uniquement.",
+  "statut": "Site fermé au public, accès extérieur uniquement.",
   "presentation": "",
   "horaires": "",
   "tarifs": "",
@@ -10,6 +10,6 @@
   "telephone": "",
   "email": "",
   "site": "",
-  "maj": "2026-09-05",
+  "maj": "2026-09-08",
   "evenements": []
 }
